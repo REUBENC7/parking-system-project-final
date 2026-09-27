@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+smartpark.db
+.venv/
+venv/
+*.egg-info/

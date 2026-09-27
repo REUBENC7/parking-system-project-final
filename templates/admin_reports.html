@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Reports &mdash; SmartPark KE{% endblock %}
+{% block content %}
+<h1>Daily report &amp; audit trail</h1>
+
+<form method="GET" style="margin-bottom:20px">
+  <label for="date">Date</label>
+  <input type="date" id="date" name="date" value="{{ day.isoformat() }}" onchange="this.form.submit()" style="max-width:220px">
+</form>
+
+<div class="stats-row">
+  <div class="stat"><div class="num">{{ sessions|length }}</div><div class="label">Vehicles recorded</div></div>
+  <div class="stat"><div class="num">Kshs {{ '%.0f' % revenue_today }}</div><div class="label">Confirmed revenue</div></div>
+</div>
+
+<h3>Audit log for {{ day.isoformat() }}</h3>
+<table>
+  <tr><th>Time</th><th>Event</th><th>Plate</th><th>Details</th><th>Amount</th></tr>
+  {% for e in audit_entries %}
+  <tr>
+    <td>{{ e.timestamp.strftime('%H:%M:%S') }}</td>
+    <td>{{ e.event_type }}</td>
+    <td>{{ e.plate_number or '-' }}</td>
+    <td>{{ e.details or '-' }}</td>
+    <td>{{ '%.2f' % e.amount_kshs if e.amount_kshs is not none else '-' }}</td>
+  </tr>
+  {% else %}
+  <tr><td colspan="5" style="color:var(--ink-soft)">No audit events for this date.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

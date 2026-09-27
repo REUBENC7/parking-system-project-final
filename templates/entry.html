@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Vehicle Entry &mdash; SmartPark KE{% endblock %}
+{% block content %}
+<h1>Record vehicle arrival</h1>
+
+{% if result %}
+  {% if result.ok %}
+    <div class="result-ok">
+      <strong>Welcome.</strong> Bay <strong>{{ result.bay_number }}</strong> allocated at
+      {{ result.entry_time.strftime('%H:%M:%S') }}. Please proceed to your bay.
+    </div>
+  {% else %}
+    <div class="result-err">{{ result.error }}</div>
+  {% endif %}
+{% endif %}
+
+<div class="card">
+  <form method="POST">
+    <label for="plate_number">Number plate</label>
+    <input type="text" id="plate_number" name="plate_number" placeholder="e.g. KDA 123A" required autofocus>
+    <button type="submit">Record arrival &amp; allocate bay</button>
+  </form>
+</div>
+
+<p style="margin-top:18px;color:var(--ink-soft)">
+  Free bays right now: <strong>{{ snapshot.free_bays }}</strong> / {{ snapshot.total_bays }}
+</p>
+{% endblock %}

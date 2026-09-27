@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Exit &amp; Pay &mdash; SmartPark KE{% endblock %}
+{% block content %}
+<h1>Exit &amp; payment</h1>
+
+{% if lookup and not lookup.ok %}
+  <div class="result-err">{{ lookup.error }}</div>
+{% endif %}
+
+{% if not lookup or not lookup.ok %}
+<div class="card">
+  <form method="POST">
+    <label for="plate_number">Number plate</label>
+    <input type="text" id="plate_number" name="plate_number" placeholder="e.g. KDA 123A" required autofocus>
+    <button type="submit">Look up &amp; calculate fee</button>
+  </form>
+</div>
+{% endif %}
+
+{% if lookup and lookup.ok %}
+<div class="card" style="max-width:520px">
+  <h2>{{ lookup.plate_number }} &mdash; Bay {{ lookup.bay_number }}</h2>
+  <table>
+    <tr><th>Duration parked</th><td>{{ lookup.duration_minutes }} minutes</td></tr>
+    <tr><th>Rate band</th><td>{{ lookup.rate_label }}</td></tr>
+    <tr><th>Amount payable</th><td><strong>Kshs {{ '%.2f' % lookup.amount_due }}</strong></td></tr>
+  </table>
+
+  <p style="margin-top:18px;color:var(--ink-soft)">Select a payment method. The barrier opens only once payment is confirmed.</p>
+  <form method="POST" action="{{ url_for('exit_pay') }}">
+    <input type="hidden" name="session_id" value="{{ lookup.session_id }}">
+    <div class="method-row">
+      <button type="submit" name="method" value="mpesa">M-Pesa</button>
+      <button type="submit" name="method" value="card">Card</button>
+      <button type="submit" name="method" value="cash">Cash</button>
+    </div>
+  </form>
+</div>
+{% endif %}
+{% endblock %}

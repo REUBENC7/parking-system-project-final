@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Exceptions &mdash; SmartPark KE{% endblock %}
+{% block content %}
+<h1>Exceptions &amp; manual overrides</h1>
+<p style="color:var(--ink-soft)">Sessions that fell outside the normal flow &mdash; flagged for review rather than silently occupying a bay or going unrecorded.</p>
+
+<h3>Overstays (open more than 24 hours)</h3>
+<table>
+  <tr><th>Plate</th><th>Bay</th><th>Entry time</th><th>Action</th></tr>
+  {% for s in overstays %}
+  <tr>
+    <td>{{ s.vehicle.plate_number }}</td>
+    <td>{{ s.bay.bay_number }}</td>
+    <td>{{ s.entry_time.strftime('%Y-%m-%d %H:%M') }}</td>
+    <td>
+      <form method="POST" style="display:flex;gap:6px;align-items:center">
+        <input type="hidden" name="session_id" value="{{ s.id }}">
+        <input type="text" name="reason" placeholder="Reason (e.g. abandoned vehicle)" required style="margin:0;padding:6px 8px;font-size:0.8rem">
+        <button type="submit" style="padding:6px 10px;font-size:0.8rem;background:var(--alert)">Force release</button>
+      </form>
+    </td>
+  </tr>
+  {% else %}
+  <tr><td colspan="4" style="color:var(--ink-soft)">None &mdash; no session has overstayed.</td></tr>
+  {% endfor %}
+</table>
+
+<h3 style="margin-top:30px">Recent failed / declined payments</h3>
+<table>
+  <tr><th>Time</th><th>Method</th><th>Reference</th><th>Amount</th></tr>
+  {% for p in failed_payments %}
+  <tr>
+    <td>{{ p.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+    <td>{{ p.method|upper }}</td>
+    <td>{{ p.reference }}</td>
+    <td>Kshs {{ '%.2f' % p.amount_kshs }}</td>
+  </tr>
+  {% else %}
+  <tr><td colspan="4" style="color:var(--ink-soft)">None recorded.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

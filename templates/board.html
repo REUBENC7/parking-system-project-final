@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Live Availability &mdash; SmartPark KE{% endblock %}
+{% block content %}
+<h1>Live slot availability</h1>
+<p style="color:var(--ink-soft)">This is the board shown at the entrance and in the driver's web/mobile view. Refreshes every 5 seconds.</p>
+
+<div class="stats-row">
+  <div class="stat"><div class="num">{{ snapshot.free_bays }}</div><div class="label">Free bays</div></div>
+  <div class="stat"><div class="num">{{ snapshot.occupied_bays }}</div><div class="label">Occupied</div></div>
+  <div class="stat"><div class="num">{{ snapshot.total_bays }}</div><div class="label">Total bays</div></div>
+  <div class="stat"><div class="num">{{ snapshot.waiting_queue|length }}</div><div class="label">Waiting at gate</div></div>
+</div>
+
+<div id="bay-grid" class="bay-grid">
+  {% for bay in snapshot.bays %}
+  <div class="bay {{ bay.status }}">{{ bay.number }}</div>
+  {% endfor %}
+</div>
+
+{% if snapshot.waiting_queue %}
+<div class="queue-note">
+  Lot is full. Vehicles waiting at the gate (first in line first): {{ snapshot.waiting_queue|join(', ') }}
+</div>
+{% endif %}
+
+<script>
+async function refreshBoard() {
+  const res = await fetch("{{ url_for('api_slots') }}");
+  const data = await res.json();
+  const grid = document.getElementById('bay-grid');
+  grid.innerHTML = data.bays.map(b => `<div class="bay ${b.status}">${b.number}</div>`).join('');
+}
+setInterval(refreshBoard, 5000);
+</script>
+{% endblock %}

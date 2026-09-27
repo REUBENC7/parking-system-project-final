@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}SmartPark KE{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="{{ url_for('board') }}" class="brand">SmartPark<span>KE</span></a>
+    <nav>
+      <a href="{{ url_for('board') }}">Board</a>
+      <a href="{{ url_for('entry') }}">Entry</a>
+      <a href="{{ url_for('exit_lookup') }}">Exit &amp; Pay</a>
+      <a href="{{ url_for('admin_rates') }}">Rates</a>
+      <a href="{{ url_for('admin_reports') }}">Reports</a>
+      <a href="{{ url_for('admin_exceptions') }}">Exceptions</a>
+    </nav>
+  </div>
+</header>
+<main class="page">
+  {% block content %}{% endblock %}
+</main>
+<footer class="foot">SmartPark KE &mdash; Data Structures &amp; Algorithms Task, Multimedia University of Kenya</footer>
+</body>
+</html>

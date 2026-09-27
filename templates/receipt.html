@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Receipt &mdash; SmartPark KE{% endblock %}
+{% block content %}
+<h1>Payment confirmed</h1>
+
+{% if outcome.ok %}
+<div class="receipt">
+  <p style="color:var(--ink-soft);margin-bottom:2px">SmartPark KE &mdash; Official Receipt</p>
+  <p class="amount">Kshs {{ '%.2f' % outcome.amount_kshs }}</p>
+  <table>
+    <tr><th>Plate</th><td>{{ session.vehicle.plate_number }}</td></tr>
+    <tr><th>Bay</th><td>{{ session.bay.bay_number }}</td></tr>
+    <tr><th>Duration</th><td>{{ session.duration_minutes }} minutes</td></tr>
+    <tr><th>Method</th><td>{{ outcome.method|upper }}</td></tr>
+    <tr><th>Reference</th><td>{{ outcome.reference }}</td></tr>
+    <tr><th>Barrier</th><td><span class="pill on">OPEN &mdash; please drive through</span></td></tr>
+  </table>
+</div>
+{% if outcome.next_queued_plate %}
+<div class="queue-note">Bay {{ session.bay.bay_number }} is now free &mdash; next in queue: {{ outcome.next_queued_plate }}. Please send them in.</div>
+{% endif %}
+{% else %}
+<div class="result-err">{{ outcome.error }}</div>
+{% if outcome.retry %}
+<div class="card" style="max-width:420px">
+  <p style="color:var(--ink-soft)">You can try again right away.</p>
+  <form method="POST" action="{{ url_for('exit_pay') }}">
+    <input type="hidden" name="session_id" value="{{ outcome.session_id }}">
+    <div class="method-row">
+      <button type="submit" name="method" value="mpesa">M-Pesa</button>
+      <button type="submit" name="method" value="card">Card</button>
+      <button type="submit" name="method" value="cash">Cash</button>
+    </div>
+  </form>
+</div>
+{% endif %}
+{% endif %}
+
+<p style="margin-top:20px"><a class="btn" href="{{ url_for('board') }}">Back to board</a></p>
+{% endblock %}
